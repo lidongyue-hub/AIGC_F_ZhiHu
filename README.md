@@ -1,6 +1,5 @@
-# qa
-
-工程实践，一个类似知乎的问答系统（服务端）
+# 
+一个类似知乎的问答系统（服务端）
 
 - [x] 用户注册
 - [x] 用户登录
@@ -51,22 +50,11 @@
 | main.go            项目入口
 ```
 
-## 使用方法
 
-### 1. 获取代码
-
-```
-git clone https://github.com/Hui4401/qa.git
-```
-
-### 2. 修改环境变量配置
-
-将项目目录下的 **example.env** 复制一份，命名为 **.env** ，修改其中 MySQL，Redis 相关配置，JWT_SECRET_KEY 是用于 jwt 加密的秘钥，设置为一个随机字符串即可
-
-### 3. 直接运行
+### 1. 直接运行
 
 确保 golang 版本在 1.14 及以上并开启了 **go module** ，执行 `go run main.go` 便会自动下载依赖并启动项目
 
-### 4. docker部署
+### 2. docker部署
 
-如果你安装了 docker，可以很方便的用 docker 部署本项目，见 Dockerfile 和 docker-compose.yml
+用 docker 部署本项目，见 Dockerfile 和 docker-compose.yml
