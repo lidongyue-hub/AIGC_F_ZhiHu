@@ -20,3 +20,5 @@ func CurrentUser(c *gin.Context) *model.User {
 	}
 	return nil
 }
+
+//end
