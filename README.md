@@ -53,8 +53,8 @@
 
 ### 1. 直接运行
 
-确保 golang 版本在 1.14 及以上并开启了 **go module** ，执行 `go run main.go` 便会自动下载依赖并启动项目
+go版本1.14、go module、执行 `go run main.go` 
 
 ### 2. docker部署
 
-用 docker 部署本项目，见 Dockerfile 和 docker-compose.yml
+用 docker 部署本项目， 用Dockerfile 和 docker-compose.yml
