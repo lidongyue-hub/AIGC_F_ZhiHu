@@ -58,3 +58,9 @@ go版本1.14、go module、执行 `go run main.go`
 ### 2. docker部署
 
 用 docker 部署本项目， 用Dockerfile 和 docker-compose.yml
+
+
+
+
+![image](https://github.com/user-attachments/assets/c707394a-caad-4522-8637-da076005841e)
+
