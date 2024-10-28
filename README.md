@@ -61,6 +61,6 @@ go版本1.14、go module、执行 `go run main.go`
 
 
 
+![image](https://github.com/user-attachments/assets/560016de-a186-4399-97a7-2b8122a692a1)
 
-![image](https://github.com/user-attachments/assets/c707394a-caad-4522-8637-da076005841e)
 
