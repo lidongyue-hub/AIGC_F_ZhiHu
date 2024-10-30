@@ -3,6 +3,7 @@ package v1
 import (
 	"fmt"
 	"math/rand"
+	"qa/cache"
 	"qa/model"
 	"qa/serializer"
 )
@@ -28,10 +29,34 @@ func (service *UserRegisterService) Valid() *serializer.Response {
 	return nil
 }
 
+// SimulateDatabaseCheck simulates a database check for username existence
+func SimulateDatabaseCheck(username string) bool {
+	// Simulated database check
+	// Return true if username exists in the database, false otherwise
+	result := model.DB.Where("username = ?", username).First(&model.User{})
+	// 检查记录是否找到
+	if result.RowsAffected == 0 {
+		return false // 或者可以返回一个特定的错误，表示用户不存在
+	}
+	return true
+}
+
 // Register 用户注册
 func (service *UserRegisterService) Register() *serializer.Response {
 	// 生成随机初始头像
 	avatar := fmt.Sprintf("http://images.nowcoder.com/head/%dt.png", rand.Intn(1000))
+
+	if cache.BloomF.CheckUsername(service.UserName) {
+		// Username probably exists, check database
+		fmt.Printf("Checking cache for username %s...\n", service.UserName)
+
+		// If username exists in cache, return success
+		// Otherwise, check database
+		if SimulateDatabaseCheck(service.UserName) {
+			// Username does exist in database
+			fmt.Printf("Username %s is already taken.\n", service.UserName)
+		}
+	}
 
 	user := model.User{
 		Username: service.UserName,
@@ -55,5 +80,8 @@ func (service *UserRegisterService) Register() *serializer.Response {
 	if err := model.DB.Create(&user).Error; err != nil {
 		return serializer.ErrorResponse(serializer.CodeDatabaseError)
 	}
+	// Add some usernames to the Bloom Filter
+	cache.BloomF.AddUsernameToFilter(service.UserName)
+
 	return serializer.OkResponse(serializer.BuildUserResponse(&user))
 }
