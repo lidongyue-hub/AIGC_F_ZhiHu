@@ -46,7 +46,7 @@ func DeleteAnswer(id uint) error {
 // 删除回答关联的点赞
 func DeleteLikeByAnswer(id uint) error {
 	result := cache.RedisClient.SAdd(DeletedAnswers, id).Err()
-	result = DB.Where("answer_id = ?", id).Delete(&UserLike{}).Error //UserLike是干什么的，放还是查
+	result = DB.Where("answer_id = ?", id).Delete(&UserLike{}).Error 
 	return result
 }
 
