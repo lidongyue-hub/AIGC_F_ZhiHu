@@ -5,6 +5,7 @@ import (
 	"qa/model"
 	"qa/serializer"
 	"strconv"
+	"time"
 )
 
 // EditQuestionService 管理修改问题的服务
@@ -47,15 +48,24 @@ func (editQuestionService *EditQuestionService) EditQuestion(user *model.User, i
 }
 
 // DeleteQuestion 删除问题
-func DeleteQuestion(user *model.User, id uint) *serializer.Response {
+func DeleteQuestion(user *model.User, id uint) *serializer.Response { //延时双删
 	if err := isQuestionOwner(user, id); err != nil {
 		return err
 	}
+
+	pipe := cache.RedisClient.TxPipeline()
+	pipe.ZRem(cache.KeyHotQuestions, strconv.Itoa(int(id)))
+	pipe.ZRem(cache.KeyHotQuestionTitle, strconv.Itoa(int(id)))
+	pipe.HDel(cache.KeyHotAnswer, strconv.Itoa(int(id)))
+	pipe.Exec()
+
 	err := model.DeleteQuestion(id)
 	if err != nil {
 		return serializer.ErrorResponse(serializer.CodeDatabaseError)
 	}
-	pipe := cache.RedisClient.TxPipeline()
+	time.Sleep(500 * time.Millisecond)
+
+	pipe = cache.RedisClient.TxPipeline()
 	pipe.ZRem(cache.KeyHotQuestions, strconv.Itoa(int(id)))
 	pipe.ZRem(cache.KeyHotQuestionTitle, strconv.Itoa(int(id)))
 	pipe.HDel(cache.KeyHotAnswer, strconv.Itoa(int(id)))
