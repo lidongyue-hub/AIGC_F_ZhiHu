@@ -1,6 +1,8 @@
 package model
 
 import (
+	"crypto/sha256"
+	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -35,6 +37,35 @@ const (
 	Active int = 1
 )
 
+// DetermineTable 根据用户名返回对应的分表名
+func DetermineTable(username string, baseTableName string) string {
+	hash := sha256.Sum256([]byte(username))
+	hashInt := int(hash[0]) // 取哈希值的一部分
+	tableNumber := hashInt % 3
+	return fmt.Sprintf("%s_%d", baseTableName, tableNumber)
+}
+
+// BeforeCreate是一个GORM钩子，在将新的用户记录插入数据库之前执行。
+func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
+	// 如果UserProfile不为空，手动将其插入到相应的表中
+	if u.UserProfile != (UserProfile{}) {
+		u.UserProfile.UserID = u.ID // Ensure that the UserID is set correctly
+
+		// 确定UserProfile使用哪个表
+		profileTable := DetermineTable(u.Username, "UserProfile") // Use a unique field to determine the table
+
+		// 将UserProfile插入到确定的表中
+		if err := tx.Table(profileTable).Create(&u.UserProfile).Error; err != nil {
+			return err
+		}
+
+		// Prevent GORM from automatically creating a UserProfile record
+		u.UserProfile = UserProfile{}
+	}
+
+	return nil
+}
+
 // GetUser 用ID获取用户
 func GetUser(ID interface{}) (User, error) {
 	var user User
@@ -43,10 +74,14 @@ func GetUser(ID interface{}) (User, error) {
 }
 
 // GetUserProfile 用ID获取用户详细信息
-func GetUserProfile(ID interface{}) (UserProfile, error) {
+func GetUserProfile(ID interface{}) (UserProfile, error) { //根据ID查User查到用户(名)，再根据用户(名)查个人信息表 || 直接根据ID查UserProfile，但需要遍历这三个表
+	var user User
+	_ = DB.First(&user, ID)
+
 	var profile UserProfile
-	result := DB.Where("user_id = ?", ID).First(&profile)
-	return profile, result.Error
+	profileTable := DetermineTable(user.Username, "UserProfile")
+	result := DB.Table(profileTable).Where("nickname = ?", user.Username).First(&profile) // user_id
+	return profile, result.Error                                                          // user.UserProfile, result.Error
 }
 
 // SetPassword 设置密码
