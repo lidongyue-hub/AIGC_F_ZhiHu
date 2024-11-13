@@ -9,12 +9,12 @@ import (
 	"qa/routes"
 )
 
-//API_SECRET_KEY = "sk-zk236783dee1d240ba89d8402f0e44c22f065b5f21ea7300";
+//API_SECRET_KEY = "sk-zk236783********************21ea7300";
 //BASE_URL = "https://flag.smarttrot.com/v1"; #智增增的base-url
 // export OPENAI_API_KEY = API_SECRET_KEY
 // export OPENAI_API_BASE = BASE_URL
 
-// 设置环境变量：export OPENAI_API_KEY=sk-zk236783dee1d240ba89d8402f0e44c22f065b5f21ea7300
+// 设置环境变量：export OPENAI_API_KEY=sk-zk236783de*****************************ea7300
 //
 //	export OPENAI_API_BASE=https://flag.smarttrot.com/v1
 //
