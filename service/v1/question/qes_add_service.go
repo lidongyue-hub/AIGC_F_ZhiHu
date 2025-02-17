@@ -53,11 +53,11 @@ func (qesAddService *QesAddService) QuestionAdd(user *model.User) *serializer.Re
 func AddllmAnswer(questionID uint, contentValue string, user *model.User) {
 
 	// 设置 OpenAI API 访问凭证和基本地址
-	os.Setenv("OPENAI_API_KEY", "sk-zk21c75de54581e7a42b3f2d582aeb5b5e6679c685cabe6c")
+	os.Setenv("OPENAI_API_KEY", "sk-zk21c75de54581e**********aeb5b5e6679c685cabe6c")
 	os.Setenv("OPENAI_API_BASE", "https://api.zhizengzeng.com/v1") // https://flag.smarttrot.com/v1
 
-	os.Setenv("QDRANT_URL", "https://3232afbd-bd84-44c8-8472-aa772bbf18af.us-east4-0.gcp.cloud.qdrant.io:6333")
-	os.Setenv("QDRANT_API_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIiwiZXhwIjoxNzQ2MDg0NTUxfQ.7wCfklLPahGVpklECyfY-kZeMSrkA2bVmTAYtF6JbNE")
+	os.Setenv("QDRANT_URL", "https://3232afbd-bd84-****-8472-aa*****f18af.us-east4-0.gcp.cloud.qdrant.io:6333")
+	os.Setenv("QDRANT_API_KEY", "eyJhbGciOiJI***************IkpXVCJ9.eyJhY2Nlc3MiOiJt*********2MDg0NTUxfQ.7wCfklLPahGVpklECyfY-k********tF6JbNE")
 
 	llm, err := openai.New()
 	if err != nil {
