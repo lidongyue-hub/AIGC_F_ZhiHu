@@ -1,8 +1,6 @@
 package model
 
 import (
-	"crypto/sha256"
-	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -10,7 +8,7 @@ import (
 // User 用户模型
 type User struct {
 	gorm.Model
-	Username    string      `gorm:"unique;not null;"`                              // 用户名
+	Username    string      `gorm:"unique;not null;default:'default_username'"`    // 用户名
 	Password    string      `gorm:"not null;"`                                     // 密码
 	UserProfile UserProfile `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // 关联用户信息
 	Questions   []Question  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // 关联问题信息
@@ -37,16 +35,16 @@ const (
 	Active int = 1
 )
 
-// DetermineTable 根据用户名返回对应的分表名
+/*// DetermineTable 根据用户名返回对应的分表名
 func DetermineTable(username string, baseTableName string) string {
 	hash := sha256.Sum256([]byte(username))
-	hashInt := int(hash[0]) // 取哈希值的一部分
-	tableNumber := hashInt % 3
+	hashInt := int(hash[0])    // 取哈希值的一部分
+	tableNumber := hashInt % 3 //0 1 2
 	return fmt.Sprintf("%s_%d", baseTableName, tableNumber)
-}
+}*/
 
 // BeforeCreate是一个GORM钩子，在将新的用户记录插入数据库之前执行。
-func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
+/*func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	// 如果UserProfile不为空，手动将其插入到相应的表中
 	if u.UserProfile != (UserProfile{}) {
 		u.UserProfile.UserID = u.ID // Ensure that the UserID is set correctly
@@ -66,6 +64,8 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	return nil
 }
 
+*/
+
 // GetUser 用ID获取用户
 func GetUser(ID interface{}) (User, error) {
 	var user User
@@ -79,9 +79,9 @@ func GetUserProfile(ID interface{}) (UserProfile, error) { //根据ID查User查�
 	_ = DB.First(&user, ID)
 
 	var profile UserProfile
-	profileTable := DetermineTable(user.Username, "UserProfile")
-	result := DB.Table(profileTable).Where("nickname = ?", user.Username).First(&profile) // user_id
-	return profile, result.Error                                                          // user.UserProfile, result.Error
+	//profileTable := "User_Profiles"                      //DetermineTable(user.Username, "UserProfile")
+	result := DB.Where("nickname = ?", user.Username).First(&profile) // user_id
+	return profile, result.Error                                      // user.UserProfile, result.Error
 }
 
 // SetPassword 设置密码

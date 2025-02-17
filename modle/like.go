@@ -1,6 +1,7 @@
 package model
 
 import (
+	"crypto/sha256"
 	"fmt"
 	"qa/cache"
 	"strconv"
@@ -35,10 +36,19 @@ func IsDeletedAnswer(aid int) bool {
 	return cache.RedisClient.SIsMember(DeletedAnswers, aid).Val()
 }
 
+// DetermineTable 根据用户id返回对应的分表名
+func DetermineTable(userID string, baseTableName string) string {
+	hash := sha256.Sum256([]byte(userID))
+	hashInt := int(hash[0])    // 取哈希值的一部分
+	tableNumber := hashInt % 3 //0 1 2
+	return fmt.Sprintf("%s_%d", baseTableName, tableNumber)
+}
+
 // GetUserLike 获取用户uid的点赞列表u
 func GetUserLikes(uid uint) ([]uint, error) {
 	var likes []UserLike
-	err := DB.Where("user_id = ? and status = 1", uid).
+	likesTable := DetermineTable(strconv.Itoa(int(uid)), "UserLike")
+	err := DB.Table(likesTable).Where("user_id = ? and status = 1", uid).
 		Order("updated_at desc").Find(&likes).Error
 
 	// 从redis中按时间倒序获取缓存的aid，
@@ -88,7 +98,8 @@ func GetUserLike(uid uint, aid uint) (uint, error) {
 	}
 	// 在redis中没有找到，从数据库获取
 	var userLike UserLike
-	result := DB.Where("user_id = ? and answer_id = ?", uid, aid).First(&userLike)
+	likesTable := DetermineTable(strconv.Itoa(int(uid)), "UserLike")
+	result := DB.Table(likesTable).Where("user_id = ? and answer_id = ?", uid, aid).First(&userLike)
 	// 如果数据库中没有该记录，返回未点赞
 	if result.RowsAffected == 0 {
 		return NONE, nil
@@ -172,7 +183,8 @@ func SyncUserLikeRecord() {
 		userLike.UserID = uint(uid)
 		userLike.AnswerID = uint(aid)
 
-		row := DB.Where(&userLike).Find(&userLike).RowsAffected
+		likesTable := DetermineTable(strconv.Itoa(int(uid)), "UserLike")
+		row := DB.Table(likesTable).Where(&userLike).Find(&userLike).RowsAffected
 
 		userLike.UpdatedAt = time.Unix(updateTime, 0)
 
@@ -180,10 +192,12 @@ func SyncUserLikeRecord() {
 		// 存在则更新，不存在则创建
 		if row > 0 {
 			userLike.Status = uint(status)
-			err = DB.Save(&userLike).Error
+			likesTable := DetermineTable(strconv.Itoa(int(uid)), "UserLike")
+			err = DB.Table(likesTable).Save(&userLike).Error
 		} else {
 			userLike.Status = uint(status)
-			err = DB.Create(&userLike).Error
+			likesTable := DetermineTable(strconv.Itoa(int(uid)), "UserLike")
+			err = DB.Table(likesTable).Create(&userLike).Error
 		}
 		if err != nil {
 			panic(err)
