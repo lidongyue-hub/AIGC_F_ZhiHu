@@ -10,7 +10,7 @@ import (
 
 // UserRegisterService 管理用户注册服务
 type UserRegisterService struct {
-	UserName        string `form:"username" json:"username" binding:"required,min=3,max=30"`
+	UserName        string `form:"username" json:"username" binding:"required,min=2,max=30"`
 	Password        string `form:"password" json:"password" binding:"required,min=6,max=18"`
 	PasswordConfirm string `form:"password_confirm" json:"password_confirm" binding:"required,min=6,max=18"`
 }
@@ -60,6 +60,7 @@ func (service *UserRegisterService) Register() *serializer.Response {
 
 	user := model.User{
 		Username: service.UserName,
+		Password: service.Password,
 		UserProfile: model.UserProfile{
 			Nickname: service.UserName,
 			Avatar:   avatar,
