@@ -22,6 +22,14 @@ type VoterService struct {
 	Type string `form:"type" json:"type" binding:"required"`
 }
 
+/*// DetermineTable 根据用户id返回对应的answer的分表名
+func DetermineTable(userID string, baseTableName string) string {
+	hash := sha256.Sum256([]byte(userID))
+	hashInt := int(hash[0])    // 取哈希值的一部分
+	tableNumber := hashInt % 3 //0 1 2
+	return fmt.Sprintf("%s_%d", baseTableName, tableNumber)
+}*/
+
 // 回答问题
 func (service *AddAnswerService) AddAnswer(user *model.User, qid uint) *serializer.Response {
 	answer := &model.Answer{
@@ -29,6 +37,7 @@ func (service *AddAnswerService) AddAnswer(user *model.User, qid uint) *serializ
 		QuestionID: qid,
 		Content:    service.Content,
 	}
+	//answerTable := DetermineTable(strconv.Itoa(int(qid)), "answer")
 
 	if err := model.DB.Create(answer).Error; err != nil {
 		return serializer.ErrorResponse(serializer.CodeDatabaseError)
