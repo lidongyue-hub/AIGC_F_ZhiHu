@@ -1,8 +1,8 @@
 package cache
 
 import (
+	"github.com/bits-and-blooms/bloom"
 	"github.com/go-redis/redis"
-	"github.com/willf/bloom"
 	"os"
 	"strconv"
 )
@@ -56,5 +56,5 @@ func Redis() {
 	RedisClient = client
 
 	// Initialize Bloom Filter
-	BloomF = NewBloomFilter(10000, 4)
+	BloomF = NewBloomFilter(1000000, 0.01)
 }
