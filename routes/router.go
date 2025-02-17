@@ -11,7 +11,9 @@ import (
 // NewRouter 路由配置
 func NewRouter() *gin.Engine {
 	r := gin.Default()
-
+	// 设置静态文件目录
+	//r.Use(cors.Default())
+	//r.Static("/static", "./static")
 	// 主页
 	r.GET("/", api.Index)
 
@@ -67,8 +69,10 @@ func NewRouter() *gin.Engine {
 			jwt.PUT("/questions/:qid/answers/:aid", v1.UpdateAnswer) // 每个回答一个id 和问题id没有直接关系，这里可以手动修改，//这个必须人用
 			// 删除回答
 			//jwt.DELETE("/questions/:qid/answers/:aid", v1.DeleteAnswer) // 每次删除，这个问题就没有回答了，可以空着，也可以人工进行回答问题，
+
 			// 点赞回答
 			jwt.POST("/answers/:aid/voters", v1.Voter)
+
 		}
 	}
 
