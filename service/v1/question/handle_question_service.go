@@ -55,7 +55,7 @@ func DeleteQuestion(user *model.User, id uint) *serializer.Response { //延时�
 
 	pipe := cache.RedisClient.TxPipeline()
 	pipe.ZRem(cache.KeyHotQuestions, strconv.Itoa(int(id)))
-	pipe.ZRem(cache.KeyHotQuestionTitle, strconv.Itoa(int(id)))
+	pipe.HDel(cache.KeyHotQuestionTitle, strconv.Itoa(int(id))) //ZRem
 	pipe.HDel(cache.KeyHotAnswer, strconv.Itoa(int(id)))
 	pipe.Exec()
 
@@ -67,7 +67,7 @@ func DeleteQuestion(user *model.User, id uint) *serializer.Response { //延时�
 
 	pipe = cache.RedisClient.TxPipeline()
 	pipe.ZRem(cache.KeyHotQuestions, strconv.Itoa(int(id)))
-	pipe.ZRem(cache.KeyHotQuestionTitle, strconv.Itoa(int(id)))
+	pipe.HDel(cache.KeyHotQuestionTitle, strconv.Itoa(int(id)))
 	pipe.HDel(cache.KeyHotAnswer, strconv.Itoa(int(id)))
 	pipe.Exec()
 	return serializer.OkResponse(nil)
