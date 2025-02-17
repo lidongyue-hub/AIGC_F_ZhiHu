@@ -188,9 +188,9 @@ func asStorage(docs []schema.Document, embedder *embeddings.EmbedderImpl) *qdran
 
 func AsRetriaver2(store *qdrant.Store, contentValue string) []schema.Document {
 	optionsVector := []vectorstores.Option{
-		vectorstores.WithScoreThreshold(0.80),
+		vectorstores.WithScoreThreshold(0.80), //在检索相关文档时，只有那些相似度分数高于 0.80 的文档才会被考虑
 	}
-
+	//ToRetriever 是一个函数，将 store 转换为一个检索器（retriever） //返回最多 10 个相关文档 数量适中
 	retriever := vectorstores.ToRetriever(store, 10, optionsVector...)
 	// search
 	resDocs, err := retriever.GetRelevantDocuments(context.Background(), contentValue)
